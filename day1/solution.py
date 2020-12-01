@@ -13,9 +13,10 @@ def solve1(target: int, numbers: Set[int]) -> int:
 def solve2(target: int, numbers: Set[int]) -> int:
     for n1 in numbers:
         for n2 in numbers:
-            n3 = target - n1 - n2
-            if n3 in numbers:
-                return n1 * n2 * n3
+            for n3 in numbers:
+                # 3 nested loops for lulz
+                if n1 + n2 + n3 == target and n1 != n2 and n1 != n3 and n2 != n3:
+                    return n1 * n2 * n3
 
     raise "Not found"
 
