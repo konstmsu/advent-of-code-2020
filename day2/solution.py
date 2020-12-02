@@ -3,7 +3,7 @@
 from typing import List
 
 
-def solve(lines: List[str]) -> int:
+def solve1(lines: List[str]) -> int:
     validCount = 0
 
     for line in lines:
@@ -17,7 +17,21 @@ def solve(lines: List[str]) -> int:
     return validCount
 
 
+def solve2(lines: List[str]) -> int:
+    validCount = 0
+
+    for line in lines:
+        template, password = line.split(": ")
+        minMax, letter = template.split(" ")
+        p1, p2 = [int(v) - 1 for v in minMax.split("-")]
+        if (password[p1] == letter) + (password[p2] == letter) == 1:
+            validCount += 1
+
+    return validCount
+
+
 with open("input.txt") as file:
     lines = file.readlines()
 
-print(solve(lines))
+print(solve1(lines))
+print(solve2(lines))
