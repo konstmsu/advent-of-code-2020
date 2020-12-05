@@ -33,4 +33,7 @@ expect({"row": 102, "column": 4, "seatID": 820}, parse("BBFFBBFRLL"))
 with open("input.txt") as file:
     lines = file.read().splitlines()
 
-print(max(int(parse(v)["seatID"]) for v in lines))
+ids = [int(parse(v)["seatID"]) for v in lines]
+
+print(max(ids))
+print(set(range(min(ids), max(ids) + 1)).difference(ids))
