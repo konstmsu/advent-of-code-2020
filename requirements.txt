@@ -2,3 +2,5 @@ ipykernel
 pylint
 black
 numpy
+python-dotenv
+requests
