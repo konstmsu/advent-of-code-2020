@@ -22,7 +22,7 @@ cookies = dict(session=os.getenv("AOC_SESSION"))
 url = f"https://adventofcode.com/2020/day/{day}/input"
 response = requests.get(url, cookies=cookies)
 response.raise_for_status()
-with open(os.path.realpath(f"input.txt"), "wt") as file:
-    file.write(response.text)
+with open(os.path.realpath(f"input.txt"), "wb") as file:
+    file.write(response.content)
 
 print(f"Written [{url}] to [{file.name}]")
