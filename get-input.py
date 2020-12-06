@@ -1,4 +1,4 @@
-#! python3
+#! python3.9
 
 import requests
 import os
