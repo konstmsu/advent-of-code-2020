@@ -4,3 +4,4 @@ black
 numpy
 python-dotenv
 requests
+more-itertools

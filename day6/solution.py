@@ -9,14 +9,12 @@ def solve1(lines):
         nonlocal currentGroup
         groups.append(len(currentGroup))
         currentGroup = set()
-        print(f"{groups=}")
 
     for line in lines:
         if line == "":
             groupComplete()
         else:
             currentGroup = currentGroup.union(line)
-            print(f"{line=} {currentGroup=}")
 
     groupComplete()
 
@@ -48,7 +46,8 @@ def solve2(lines):
 with open("input.txt") as file:
     lines = file.read().splitlines()
 
-# solve1(lines)
-print(solve2(lines))
+print(f"{solve1(lines)=}")
+print(f"{solve2(lines)=}")
 
+assert 6903 == solve1(lines)
 assert 3493 == solve2(lines)
