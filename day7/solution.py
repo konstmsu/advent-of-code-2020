@@ -8,8 +8,11 @@ def expect(expected, actual):
         raise Exception(f"{expected=} {actual=}")
 
 
+def valueOrEmpty(dict, key):
+    return dict[key] if key in dict else []
+
+
 def solve1(lines: List[str]) -> int:
-    children = {}
     parents = {}
 
     def addToList(dict, key, value):
@@ -18,7 +21,6 @@ def solve1(lines: List[str]) -> int:
         dict[key].append(value)
 
     def addRelation(parent, child):
-        addToList(children, parent, child)
         addToList(parents, child, parent)
 
     for line in lines:
@@ -26,18 +28,13 @@ def solve1(lines: List[str]) -> int:
         if contents == "no other bags.":
             continue
         for content in contents.split(", "):
-            count, color1, color2, _ = content.split(" ")
+            _, color1, color2, _ = content.split(" ")
             addRelation(container, f"{color1} {color2}")
 
     start = "shiny gold"
-    print(f"{children[start]=}")
-    print(f"{parents[start]=}")
 
     toVisit = [start]
     top = set()
-
-    def valueOrEmpty(dict, key):
-        return dict[key] if key in dict else []
 
     while toVisit:
         bag = toVisit.pop()
@@ -47,6 +44,37 @@ def solve1(lines: List[str]) -> int:
     top.remove(start)
 
     return len(top)
+
+
+def solve2(lines: List[str]) -> int:
+    children = {}
+
+    def addToList(dict, key, value):
+        if key not in dict:
+            dict[key] = []
+        dict[key].append(value)
+
+    def addRelation(parent, child, count):
+        addToList(children, parent, (child, count))
+
+    for line in lines:
+        container, contents = line.split(" bags contain ")
+        if contents == "no other bags.":
+            continue
+        for content in contents.split(", "):
+            count, color1, color2, _ = content.split(" ")
+            addRelation(container, f"{color1} {color2}", int(count))
+
+    def countChildren(root):
+        nonlocal children
+        return 1 + sum(
+            countChildren(child) * count
+            for child, count in valueOrEmpty(children, root)
+        )
+
+    start = "shiny gold"
+
+    return countChildren(start) - 1
 
 
 with open("input.txt") as file:
@@ -72,10 +100,10 @@ dark violet bags contain no other bags.""".splitlines()
 
 expect(4, solve1(example1))
 expect(248, solve1(lines))
-# expect(32, solve2(example1))
-# expect(126, solve2(example2))
+expect(32, solve2(example1))
+expect(126, solve2(example2))
 
 print(f"{solve1(lines)=}")
-# print(f"{solve2(lines)=}")
+print(f"{solve2(lines)=}")
 
-# expect(249, solve2(lines))
+expect(57281, solve2(lines))
