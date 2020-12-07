@@ -12,49 +12,18 @@ def valueOrEmpty(dict, key):
     return dict[key] if key in dict else []
 
 
-def solve1(lines: List[str]) -> int:
+def addToList(dict, key, value):
+    if key not in dict:
+        dict[key] = []
+    dict[key].append(value)
+
+
+def parse(lines: List[str]) -> int:
     parents = {}
-
-    def addToList(dict, key, value):
-        if key not in dict:
-            dict[key] = []
-        dict[key].append(value)
-
-    def addRelation(parent, child):
-        addToList(parents, child, parent)
-
-    for line in lines:
-        container, contents = line.split(" bags contain ")
-        if contents == "no other bags.":
-            continue
-        for content in contents.split(", "):
-            _, color1, color2, _ = content.split(" ")
-            addRelation(container, f"{color1} {color2}")
-
-    start = "shiny gold"
-
-    toVisit = [start]
-    top = set()
-
-    while toVisit:
-        bag = toVisit.pop()
-        top.add(bag)
-        toVisit += valueOrEmpty(parents, bag)
-
-    top.remove(start)
-
-    return len(top)
-
-
-def solve2(lines: List[str]) -> int:
     children = {}
 
-    def addToList(dict, key, value):
-        if key not in dict:
-            dict[key] = []
-        dict[key].append(value)
-
     def addRelation(parent, child, count):
+        addToList(parents, child, parent)
         addToList(children, parent, (child, count))
 
     for line in lines:
@@ -65,16 +34,34 @@ def solve2(lines: List[str]) -> int:
             count, color1, color2, _ = content.split(" ")
             addRelation(container, f"{color1} {color2}", int(count))
 
-    def countChildren(root):
+    return parents, children
+
+
+def solve1(lines: List[str]) -> int:
+    parents, _ = parse(lines)
+
+    toVisit = ["shiny gold"]
+    ancestors = set()
+
+    while toVisit:
+        bag = toVisit.pop()
+        ancestors.add(bag)
+        toVisit += valueOrEmpty(parents, bag)
+
+    return len(ancestors) - 1
+
+
+def solve2(lines: List[str]) -> int:
+    _, children = parse(lines)
+
+    def countDescendants(root):
         nonlocal children
         return 1 + sum(
-            countChildren(child) * count
+            countDescendants(child) * count
             for child, count in valueOrEmpty(children, root)
         )
 
-    start = "shiny gold"
-
-    return countChildren(start) - 1
+    return countDescendants("shiny gold") - 1
 
 
 with open("input.txt") as file:
