@@ -6,26 +6,52 @@ def expect(expected, actual):
         raise Exception(f"{expected=} {actual=}")
 
 
+class Handheld:
+    def __init__(self, lines):
+        self.program = [((p := line.split(" "))[0], int(p[1])) for line in lines]
+        self.acc = 0
+        self.cpu = 0
+        self.visited = set()
+        self.commands = {
+            "acc": lambda arg: (self.acc + arg, self.cpu + 1),
+            "nop": lambda arg: (self.acc, self.cpu + 1),
+            "jmp": lambda arg: (self.acc, self.cpu + arg),
+        }
+
+    def step(self):
+        self.visited.add(self.cpu)
+        op, arg = self.program[self.cpu]
+        self.acc, self.cpu = self.commands[op](arg)
+
+    def isInfiniteLoopDetected(self):
+        return self.cpu in self.visited
+
+    def isTerminated(self):
+        return self.cpu == len(self.program)
+
+
 def getLoopAcc(lines):
-    program = [((p := line.split(" "))[0], int(p[1])) for line in lines]
-    acc = 0
-    cpu = 0
-    commands = {
-        "acc": lambda arg: (acc + arg, cpu + 1),
-        "nop": lambda arg: (acc, cpu + 1),
-        "jmp": lambda arg: (acc, cpu + arg),
-    }
-    visited = set()
+    handheld = Handheld(lines)
 
     for i in range(100000):
-        if cpu in visited:
-            return acc
-        visited.add(cpu)
+        if handheld.isInfiniteLoopDetected():
+            return handheld.acc
+        handheld.step()
 
-        op, arg = program[cpu]
-        acc, cpu = commands[op](arg)
+    raise Exception("No infinite loop detected")
 
-    return None
+
+def fixJumpNop(lines):
+    for i in range(len(lines)):
+        handheld = Handheld(lines)
+        op, arg = handheld.program[i]
+        if op == "acc":
+            continue
+        handheld.program[i] = ("nop" if op == "jmp" else "jmp"), arg
+        for _ in range(10000):
+            if handheld.isTerminated():
+                return handheld.acc
+            handheld.step()
 
 
 with open("input.txt") as file:
@@ -43,3 +69,6 @@ acc +6""".splitlines()
 
 expect(5, getLoopAcc(sample))
 expect(1420, getLoopAcc(lines))
+
+expect(8, fixJumpNop(sample))
+expect(1245, fixJumpNop(lines))
