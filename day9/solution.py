@@ -1,5 +1,7 @@
 # %%
 
+import numpy as np
+
 
 def solve1(preambleSize, lines):
     numbers = [int(line) for line in lines]
@@ -21,6 +23,22 @@ def solve1(preambleSize, lines):
 
         lastN.remove(numbers[i - preambleSize])
         lastN.add(number)
+
+    raise Exception()
+
+
+def solve2(targetSum, lines):
+    numbers = [int(line) for line in lines]
+    n = len(lines)
+
+    sums = np.zeros((n + 1, n + 1), dtype=np.int)
+    for i in range(n):
+        for j in range(i, n):
+            sums[i + 1, j + 1] = sums[i + 1, j] + numbers[j]
+
+    for r, c in np.argwhere(sums == targetSum):
+        nn = numbers[r - 1 : c]
+        return min(nn) + max(nn)
 
     raise Exception()
 
@@ -57,3 +75,6 @@ with open("input.txt") as file:
 
 expect(127, solve1(5, example))
 expect(556543474, solve1(25, lines))
+
+expect(62, solve2(127, example))
+expect(76096372, solve2(556543474, lines))
