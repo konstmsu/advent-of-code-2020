@@ -10,11 +10,34 @@ def solve1(lines):
             diffCounts[diff] = 0
 
         diffCounts[diff] += 1
-        print(f"{n2=} {n1=} {diffCounts=}")
 
     diffCounts[3] += 1
 
     return diffCounts[1], diffCounts[3]
+
+
+def solve2(lines):
+    numbers = set(int(line) for line in lines)
+    numbers.add(0)
+    end = max(numbers) + 3
+    cache = {0: 1}
+
+    def countUp(fr):
+        nonlocal numbers, cache
+
+        if fr in cache:
+            return cache[fr]
+
+        ways = 0
+        for i in range(1, 4):
+            v = fr - i
+            if v in numbers:
+                ways += countUp(v)
+
+        cache[fr] = ways
+        return ways
+
+    return countUp(end)
 
 
 sample1 = """16
@@ -74,3 +97,7 @@ expect((7, 5), solve1(sample1))
 expect((22, 10), solve1(sample2))
 expect((70, 34), solve1(lines))
 print(70 * 34)
+
+expect(8, solve2(sample1))
+expect(19208, solve2(sample2))
+expect(48358655787008, solve2(lines))
